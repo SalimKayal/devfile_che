@@ -1,0 +1,54 @@
+schemaVersion: 2.1.0
+metadata:
+  name: fastapi-hello-world
+projects:
+  - clonePath: server
+    git:
+      remotes:
+        origin: 'https://github.com/salimkayal/server_che.git'
+    name: server-che
+  - clonePath: client
+    git:
+      remotes:
+        origin: 'https://github.com/salimkayal/client_che.git'
+    name: client-che
+components:
+  - name: tools
+    container:
+      env:
+        - name: PATH
+          value: '/home/user/.local/bin:/checode/checode-linux-libc/bin/remote-cli:/home/user/.cargo/bin:/home/user/.nvm/versions/node/v16.14.0/bin:/home/user/.local/share/coursier/bin:/home/user/.sdkman/candidates/gradle/current/bin:/home/user/.sdkman/candidates/java/current/bin:/home/user/.sdkman/candidates/maven/current/bin:/home/user/.krew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/user/.dotnet/tools'
+      image: 'quay.io/devfile/universal-developer-image:ubi8-3055e6d'
+      memoryLimit: 3.07G
+      memoryRequest: 256Mi
+      mountSources: true
+      sourceMapping: /projects
+      volumeMounts:
+        - name: local
+          path: /home/user/.local
+        - name: cache
+          path: /home/user/.cache
+  - name: local
+    volume:
+      size: 1G
+  - name: cache
+    volume:
+      size: 1G
+commands:
+  - exec:
+      commandLine: 'poetry run uvicorn api:app'
+      component: tools
+      group:
+        kind: run
+      label: Run the server
+      workingDir: '${PROJECTS_ROOT}/server'
+    id: run-server
+  - exec:
+      commandLine: python client.py
+      component: tools
+      group:
+        kind: run
+      label: Run the client
+      workingDir: '${PROJECTS_ROOT}/client'
+    id: run-client
+
