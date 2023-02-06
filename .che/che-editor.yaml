@@ -1,2 +1,42 @@
-id: che-incubator/che-pycharm/next
-registryUrl: https://eclipse-che.github.io/che-plugin-registry/main/v3
+inline:
+	endpoints:
+    - name: "jupyterlab"
+      public: true
+      targetPort: 8888
+      attributes:
+        protocol: http
+        type: ide
+        secure: true
+        cookiesAuthEnabled: true
+        discoverable: false
+	name: jupyterlab
+		container:
+			image: 'index.docker.io/jupyter/scipy-notebook:latest'
+			volumeMounts:
+				- name: projects
+					path: /home/jovyan
+			env:
+				- name: JUPYTER_TOKEN
+					value: my_secure_token
+			mountSources: true
+			memoryLimit: 2048M
+			memoryRequest: 32Mi
+			cpuLimit: 1500m
+			cpuRequest: 100m
+			endpoints:
+				- name: jupyterlab
+					attributes:
+						type: main
+						protocol: http
+						cookiesAuthEnabled: true
+						urlRewriteSupported: true
+						discoverable: false
+					targetPort: 8888
+					exposure: public
+					secure: false
+					protocol: https
+			attributes:
+				ports:
+					- exposedPort: 8888
+    - name: projects
+      volume: {}
